@@ -1,12 +1,8 @@
 from flask import Flask, request, jsonify
-import pymongo
 import bcrypt
-from pymongo import MongoClient
 from flask import Markup
-from flask_pymongo import PyMongo
 import os
 from dotenv import load_dotenv
-import ssl
 from bson import json_util
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
@@ -37,7 +33,7 @@ def startpy():
       password = request.json['password']
       password_bytes = password.encode('utf-8')
       hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
-      user_tuple = (username, hashed_password)
+      user_tuple = (username, hashed_password.decode('utf-8'))
       conn = connectDB()
       cur = conn.cursor()
       cur.execute("INSERT INTO _users (username, password) VALUES (%s, %s) RETURNING id, username", user_tuple)
@@ -67,12 +63,13 @@ def startpy2():
     conn.close()
     
     if foundUser:
-      if bcrypt.checkpw(b'password', b'foundUser[1]'):
-         foundUser[1] = ""
-      
-    new_list = list(foundUser)
-    return jsonify(new_list)
-
+      if bcrypt.checkpw(password.encode('utf-8'), foundUser[1].encode('utf-8')):
+        foundUser_list = list(foundUser)
+        foundUser_list[1] = ""
+        foundUser = tuple(foundUser_list)
+        return jsonify(foundUser)
+    else:
+       return "error"
 
 if __name__ == '__main__':
   app.run(debug=True)
