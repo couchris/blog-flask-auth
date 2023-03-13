@@ -11,15 +11,19 @@ import psycopg2.extras
 app = Flask(__name__)
 load_dotenv()
 MONGO_URi = os.environ.get('MONGO_URi')
+DB_NAME = os.environ.get('DB_NAME')
+DB_USER = os.environ.get('DB_USER')
+DB_PASS = os.environ.get('DB_PASS')
+DB_HOST = os.environ.get('DB_HOST')
 
 def connectDB():
   try:
-    # Set up a connection to the database - 'postgres://nszjufuw:eo-PTwUUTFjpo3kKUbGGOdoyDuGKmDeS@isilo.db.elephantsql.com/nszjufuw+psycopg2'
+    # Set up a connection to the database
     conn = psycopg2.connect(
-        dbname="nszjufuw",
-        user="nszjufuw",
-        password="eo-PTwUUTFjpo3kKUbGGOdoyDuGKmDeS",
-        host="isilo.db.elephantsql.com"
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASS,
+        host=DB_HOST
     )
     return conn
   except:
